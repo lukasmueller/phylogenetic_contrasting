@@ -125,6 +125,8 @@ sub run {
     my $candidate_count = 0;
     my $skip =0;
 
+    my $query_species = "";
+
     open (my $F, "<", $self->blast_file()) || die "Can't open \"".$self->blast_file()."\". ";
     while (<$F>) { 
 	chomp;
@@ -157,11 +159,15 @@ sub run {
 	    %outgroups = ();
 
 	    $skip = 0;
+
+	    $query_species = "";
 	}
 
-	if ($skip) { 		print STDERR "."; next; }
+	if ($skip) {  next; }
 
 	#print STDERR "$q, $s, $score\n";
+	my $query_species = $self->id2species($q);
+
 	my $species = $self->id2species($s);
 
 	$species{$species}++;
@@ -183,7 +189,7 @@ sub run {
 
 	    # don't allow outgroup matches before ingroup matches
 	    #
-	    if (keys(%ingroups) < $self->min_outgroups() && keys(%outgroups)>0) { 
+	    if (keys(%ingroups) < $self->min_ingroups() && keys(%outgroups)>0) { 
 		$candidate_flag=0;
 		$skip = 1;
 		next;
@@ -191,9 +197,13 @@ sub run {
 	    }
 	}
 
+	if ($query_species eq $species && ($q ne $s) ) { 
+	    print "skipping $q because $q and $s are both in this group and of species $species.\n";
+	    next;
+	}
+
 	if ((scalar(keys(%outgroups))>=$self->min_outgroups()) && (scalar(keys(%ingroups))>$self->min_ingroups()) && ($contrast_flag ==0) ) { 
 	    $candidate_flag= 1;
-
 	}
 
 	$old_q = $q;
