@@ -56,12 +56,12 @@ has 'contrast_group' => (is=> 'rw',
 
 has 'min_ingroups' => (is=>'rw',
 		       isa=> 'Int',
-		       default => 5,
+		       default => 7,
     );
 
 has 'min_outgroups' => (is=>'rw',
 			isa =>'Int',
-			default => 4,
+			default => 5,
     );
 
 
@@ -101,8 +101,8 @@ sub run {
     my $self = shift;
 
     $self->outgroup( [ qw | rice maize brachypodium sorghum selaginella | ]);
-    $self->ingroup( [ qw | tomato poplar vitis papaya soybean castorbean cucumber | ]);
-    $self->contrast_group ([ qw | arabidopsis lyrata |]);
+    $self->ingroup( [ qw | tomato castorbean soybean medicago poplar cassava grape potato papaya cucumber | ]);
+    $self->contrast_group ([ qw | arabidopsis lyrata brapa crubella thalophila |]);
     
     my $old_q = "";
 
@@ -159,7 +159,7 @@ sub run {
 	    $skip = 0;
 	}
 
-	if ($skip) { 		print STDERR "."; next; }
+	if ($skip) { 		print STDERR ""; next; }
 
 	#print STDERR "$q, $s, $score\n";
 	my $species = $self->id2species($s);
@@ -214,20 +214,39 @@ sub id2species {
     my $id = shift;
 
     if ($id =~ /At[1-5CM]g\d+/i) { return "arabidopsis"; }
-    if ($id =~ /^SL2\..*/)   { return "tomato"; }
-    if ($id =~ /^GSVIV/)   { return "vitis"; }
+    if ($id =~ /^Solyc/)   { return "tomato"; }
+    if ($id =~ /^GSVIV/)   { return "grape"; }
     if ($id =~ /^GRMZM/ || $id=~ /^\w{2}.*\d+\_FGP\d+/)   { return "maize"; }
-    if ($id =~ /evm.TU/i)  { return "papaya"; }
-    if ($id =~ /^LOC_OS/i) { return "rice"; }
+    if ($id =~ /evm.model.supercontig/i || /evm.TU.contig/i)  { return "papaya"; }
+    if ($id =~ /^LOC_OS/i || $id=~ /^ChrSy.fgenesh.mRNA/ || $id=~ /^ChrUn.fgenesh.mRNA/) { return "rice"; }
     if ($id =~ /^Sb/)      { return "sorghum"; }
     if ($id =~ /Glyma/i)   { return "soybean"; }
     if ($id =~ /Bradi/)    { return "brachypodium"; }
     if ($id =~ /\d{5}\_?\.?m\d{5,6}/) { return "castorbean"; }
-    if ($id =~ /^Csa/) { return "cucumber"; }
-    if ($id =~ /Selmo1/)   { return "selaginella"; }
-    if ($id =~ /Araly1/i)   { return "lyrata"; }
-    if ($id =~ /Poptr1_1/) { return "poplar"; }
-    
+    if ($id =~ /^Cucsa/) { return "cucumber"; }
+    if ($id =~ /^Sm/)   { return "selaginella"; }
+    if ($id =~ /Aly/i)   { return "lyrata"; }
+    if ($id =~ /POPTR_/) { return "poplar"; }
+    if ($id =~ /^Bra\d{6}/) { return "brapa";}
+    if ($id =~ /^Medtr[1-8]g\d{6}/ || $id=~ /^AC/ || $id=~ /^CU/ || $id=~ /^contig_\d+/) { return "medicago";}   
+    if ($id =~ /^CM/ || $id=~ /^Lj/ || $id =~ /^chr[1-6]/) { return "lotus";}
+    if ($id =~ /^orange/) { return "orange";}
+    if ($id =~ /^clementine/) { return "clementine";}
+    if ($id =~ /^cassava/) { return "cassava";}
+    if ($id =~ /^mgv/) { return "mimulus";}
+    if ($id =~ /^PGSC/) { return "potato";}
+    if ($id =~ /^Carubv/) { return "crubella";}
+    if ($id =~ /^Thhalv100/) { return "thalophila";}
+    if ($id =~ /^Pp1s/) { return "moss";}
+    if ($id =~ /^Cre/) { return "chlamy";}
+    if ($id =~ /^Vocar200/) { return "volvox";}
+    if ($id =~ /^Ostta4-/) { return "tauri";}
+    if ($id =~ /^Olu-/) { return "lucimarinus";}
+
+
+
+
+
     die "don't know $id\n";
 }
 
